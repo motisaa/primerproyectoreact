@@ -17,6 +17,7 @@ import { Grid, ListItemText } from "@mui/material";
 import ListItem from "@mui/material/ListItem";
 import PersonIcon from "@mui/icons-material/Person";
 import Drawer from "@mui/material/Drawer";
+import GroupIcon from '@mui/icons-material/Group';
 
 const drawerWidth = 230;
 export const NavBar = (props) => {
@@ -137,6 +138,20 @@ export const NavBar = (props) => {
                       <PersonIcon />
                     </ListItemIcon>
                     <ListItemText> Usuarios </ListItemText>
+                  </ListItemButton>
+                </ListItem>
+                <ListItem
+                  key="Grupos"
+                  disablePadding
+                  onClick={() => {
+                    navigate("/grupos");
+                  }}
+                >
+                  <ListItemButton>
+                    <ListItemIcon>
+                      <GroupIcon />
+                    </ListItemIcon>
+                    <ListItemText> Grupos </ListItemText>
                   </ListItemButton>
                 </ListItem>
               </List>
