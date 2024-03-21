@@ -127,6 +127,7 @@ export const UsuariosPagina = () => {
     { field: "nombre", headerName: "Nombre", flex: 1 },
     { field: "login", headerName: "Login", flex: 0.4 },
     { field: "email", headerName: "email", flex: 0.3, hide: true  },
+    { field: "usuarioGrupoId", headerName: "Grupo ID", flex: 0.3 },
     {
       field: "actions",
       type: "actions",

@@ -8,13 +8,20 @@ import { GeneralCtx } from "../../contextos/GeneralContext";
 import { MensajeError } from "../../servicios/TratamientoErrores";
 import { ErrorGeneral } from "../../componentes/ErrorGeneral/ErrorGeneral";
 import { MensajeInformativo } from "../../componentes/MensajeInformativo/MensajeInformativo";
-import { Button, TextField, Typography, Grid } from "@mui/material";
+import {
+  Autocomplete,
+  Button,
+  TextField,
+  Typography,
+  Grid,
+} from "@mui/material";
 import {
   ActualizarUsuario,
   CrearUsuario,
   LeerUsuario,
 } from "../../servicios/RQUsuarios";
 import { NavBar } from "../../componentes/NavBar/NavBar";
+import { LeerGrupos } from "../../servicios/RQGrupos";
 
 export const UsuarioPagina = () => {
   const params = useParams();
@@ -24,6 +31,32 @@ export const UsuarioPagina = () => {
   const [mensajeError, setMensajeError] = useState("");
   const [hayMensaje, setHayMensaje] = useState(false);
   const [mensaje, setMensaje] = useState("");
+
+  const [grupos, setGrupos] = useState([]);
+  let grupo_seleccionado = null;
+  const getGrupoIdValue = () => {
+    grupo_seleccionado = grupos.find(
+      (i) => i.usuarioGrupoId === formik.values.usuarioGrupoId
+    );
+    return grupo_seleccionado || null;
+  };
+  useQuery(
+    "grupos",
+    () => {
+      return LeerGrupos();
+    },
+    {
+      onSuccess: (data) => {
+        let opciones_grupos = data.data;
+        setGrupos(opciones_grupos);
+      },
+      onError: (error) => {
+        console.error(error);
+        setMensajeError(MensajeError(error));
+        setHayError(true);
+      },
+    }
+  );
 
   const handleSubmit = async (values) => {
     if (!values.usuarioId) {
@@ -78,10 +111,11 @@ export const UsuarioPagina = () => {
       return LeerUsuario(params.usuarioId);
     },
     {
-      onSuccess: (data, variables, context) => {
+      onSuccess: (data) => {
         formik.setValues({ ...formik.values, ...data.data });
       },
-      onError: (error, variables, context) => {
+
+      onError: (error) => {
         console.error(error);
         setMensajeError(MensajeError(error));
         setHayError(true);
@@ -89,8 +123,6 @@ export const UsuarioPagina = () => {
       enabled: params.usuarioId !== "0",
     }
   );
-
- 
 
   return (
     <>
@@ -177,6 +209,34 @@ export const UsuarioPagina = () => {
                   formik.touched.password && Boolean(formik.errors.password)
                 }
                 helperText={formik.touched.password && formik.errors.password}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <Autocomplete
+                label="Grupo"
+                options={grupos}
+                value={getGrupoIdValue()}
+                getOptionLabel={(option) => option.nombre}
+                onChange={(e, value) => {
+                  formik.setFieldValue("usuarioGrupoId", value.usuarioGrupoId);
+                }}
+                fullWidth
+                id="usuarioGrupoId"
+                name="usuarioGrupoId"
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Elija un grupo"
+                    error={
+                      formik.touched.usuarioGrupoId &&
+                      Boolean(formik.errors.usuarioGrupoId)
+                    }
+                    helperText={
+                      formik.touched.usuarioGrupoId &&
+                      formik.errors.usuarioGrupoId
+                    }
+                  ></TextField>
+                )}
               />
             </Grid>
             <Grid item xs={12} md={6}></Grid>

@@ -7,6 +7,7 @@ export const initialValues = () => {
     nombre: "",
     login: "",
     password: "",
+    usuarioGrupoId: ""
   };
 };
 /* This function defines the validation rules for the form fields using Yup.
@@ -18,5 +19,6 @@ export const validationSchema = () => {
     login: yup.string().required("Requerido"),
     password: yup.string().required("Requerido"),
     email: yup.string().required("Requerido"),
+    usuarioGrupoId: yup.string().required("Requerido"),
   });
 };

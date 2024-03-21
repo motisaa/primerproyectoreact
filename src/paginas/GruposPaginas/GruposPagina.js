@@ -4,8 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { NavBar } from "../../componentes/NavBar/NavBar";
 import { MensajeError } from "../../servicios/TratamientoErrores";
 import { ErrorGeneral } from "../../componentes/ErrorGeneral/ErrorGeneral";
-import { LeerGrupos, eliminarGrupo } from "../../servicios/RQGrupos";
-import { GeneralCtx } from "../../contextos/GeneralContext";
+import { LeerGrupos, EliminarGrupo } from "../../servicios/RQGrupos";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
@@ -23,59 +22,58 @@ import { MensajeInformativo } from "../../componentes/MensajeInformativo/Mensaje
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 
 export const GruposPagina = () => {
-    const navigate = useNavigate();
-    const [hayError, setHayError] = useState(false);
-    const [mensajeError, setMensajeError] = useState("");
-    const [hayMensaje, setHayMensaje] = useState(false);
-    const [mensaje, setMensaje] = useState("");
-    const [hayConfirmacion, setHayConfirmacion] = useState(false);
-    const [mensajeConfirmacion, setMensajeConfirmacion] = useState("");
-    const [grupos, setGrupos] = useState([]);
-    const [grupo, setGrupo] = useState();
+  const navigate = useNavigate();
+  const [hayError, setHayError] = useState(false);
+  const [mensajeError, setMensajeError] = useState("");
+  const [hayMensaje, setHayMensaje] = useState(false);
+  const [mensaje, setMensaje] = useState("");
+  const [hayConfirmacion, setHayConfirmacion] = useState(false);
+  const [mensajeConfirmacion, setMensajeConfirmacion] = useState("");
+  const [grupos, setGrupos] = useState([]);
+  const [grupo, setGrupo] = useState();
 
-    const queryGrupos = useQuery(
-        "usuarios_grupos",
-        () => {
-          return LeerGrupos();
-        },
-        {
-          onSuccess: (data) => {
-            setGrupos(data.data);
-          },
-          onError: (error) => {
-            console.error(error);
-            setMensajeError(MensajeError(error));
-            setHayError(true);
-          },
-        }
-      );
+  const queryGrupos = useQuery(
+    "grupos",
+    () => {
+      return LeerGrupos();
+    },
+    {
+      onSuccess: (data) => {
+        setGrupos(data.data);
+      },
+      onError: (error) => {
+        console.error(error);
+        setMensajeError(MensajeError(error));
+        setHayError(true);
+      },
+    }
+  );
 
-      const eliminaGrupo = useMutation(
-        ({ grupoId }) => {
-          return eliminarGrupo(grupoId);
-        },
-        {
-          onError: (error) => {
-            // si ocurre un error, se imprime en la consola (console.error(error)),
-            console.error(error);
-            // se establece un mensaje de error utilizando la función MensajeError(error
-            setMensajeError(MensajeError(error));
-            setHayError(true);
-          },
-        }
-      );
+  const eliminaGrupo = useMutation(
+    ({ usuarioGrupoId }) => {
+      return EliminarGrupo(usuarioGrupoId);
+    },
+    {
+      onError: (error) => {
+        // si ocurre un error, se imprime en la consola (console.error(error)),
+        console.error(error);
+        // se establece un mensaje de error utilizando la función MensajeError(error
+        setMensajeError(MensajeError(error));
+        setHayError(true);
+      },
+    }
+  );
 
-      const newGrupo = () => {
-        navigate(`/grupo/0`);
-      };
-    
-      const editGrupo = (id) => {
-        return () => {
-          navigate(`/grupo/${id}`);
-        };
-      };
+  const newGrupo = () => {
+    navigate(`/grupo/0`);
+  };
 
-      
+  const editGrupo = (usuarioGrupoId) => {
+    return () => {
+      navigate(`/grupo/${usuarioGrupoId}`);
+    };
+  };
+
   const deleteGrupo = (row) => {
     return () => {
       setGrupo(row);
@@ -86,7 +84,7 @@ export const GruposPagina = () => {
     };
   };
   const deleteConfirmado = async () => {
-    await eliminaGrupo.mutateAsync({ grupoId: grupo.grupoId });
+    await eliminaGrupo.mutateAsync({ usuarioGrupoId: grupo.usuarioGrupoId });
     queryGrupos.refetch();
     setHayConfirmacion(false);
     setMensaje(
@@ -97,7 +95,7 @@ export const GruposPagina = () => {
   const columns = [
     { field: "usuarioGrupoId", headerName: "ID", width: 50 },
     { field: "nombre", headerName: "Nombre", flex: 1 },
-    
+
     {
       field: "actions",
       type: "actions",
@@ -123,7 +121,7 @@ export const GruposPagina = () => {
             <AppBar id="imagen" position="static" color="secondary">
               <Toolbar>
                 <Typography variant="h6" component="h6">
-                  Usuarios
+                  Grupos
                 </Typography>
                 <span className="toolbarButtons">
                   <IconButton
@@ -169,6 +167,4 @@ export const GruposPagina = () => {
       </NavBar>
     </>
   );
-}
-
-
+};
