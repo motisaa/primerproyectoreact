@@ -22,6 +22,15 @@ import {
 } from "../../servicios/RQUsuarios";
 import { NavBar } from "../../componentes/NavBar/NavBar";
 import { LeerGrupos } from "../../servicios/RQGrupos";
+import moment from "moment";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import {
+  ConvertirAFechaEs,
+  FormatoFechaEs,
+} from "../../utilidades/TratamientoFechas";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import "moment/locale/es";
+import { useGeolocated } from "react-geolocated";
 
 export const UsuarioPagina = () => {
   const params = useParams();
@@ -57,8 +66,9 @@ export const UsuarioPagina = () => {
       },
     }
   );
-
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const handleSubmit = async (values) => {
+    values.fechaInterna = moment(selectedDate).format("YYYY-MM-DD HH:mm:ss");
     if (!values.usuarioId) {
       await crearUsuario.mutateAsync(values);
     } else {
@@ -113,6 +123,7 @@ export const UsuarioPagina = () => {
     {
       onSuccess: (data) => {
         formik.setValues({ ...formik.values, ...data.data });
+        setSelectedDate(ConvertirAFechaEs(data.data.fechaInterna));
       },
 
       onError: (error) => {
@@ -123,6 +134,13 @@ export const UsuarioPagina = () => {
       enabled: params.usuarioId !== "0",
     }
   );
+  const { coords, isGeolocationAvailable, isGeolocationEnabled } =
+  useGeolocated({
+      positionOptions: {
+          enableHighAccuracy: true,
+      },
+      userDecisionTimeout: 5000,
+  });
 
   return (
     <>
@@ -237,6 +255,45 @@ export const UsuarioPagina = () => {
                     }
                   ></TextField>
                 )}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <LocalizationProvider
+                dateAdapter={AdapterMoment}
+                adapterLocale="es-ES"
+              >
+                <DateTimePicker
+                  renderInput={(props) => <TextField {...props} />}
+                  label="Fecha de alta"
+                  value={selectedDate}
+                  onChange={(newValue) => {
+                    setSelectedDate(newValue);
+                  }}
+                />
+              </LocalizationProvider>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                id="latitud"
+                name="latitud"
+                label="Latitud"
+                value={formik.values.latitud}
+                onChange={formik.handleChange}
+                error={formik.touched.latitud && Boolean(formik.errors.latitud)}
+                helperText={formik.touched.latitud && formik.errors.latitud}
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                id="longitud"
+                name="longitud"
+                label="Longitud"
+                value={formik.values.longitud}
+                onChange={formik.handleChange}
+                error={formik.touched.longitud && Boolean(formik.errors.longitud)}
+                helperText={formik.touched.longitud && formik.errors.longitud}
               />
             </Grid>
             <Grid item xs={12} md={6}></Grid>

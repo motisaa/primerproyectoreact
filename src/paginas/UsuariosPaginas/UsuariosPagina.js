@@ -21,6 +21,8 @@ import {
 import { MensajeConfirmacion } from "../../componentes/MensajeConfirmacion/MensajeConfirmacion";
 import { MensajeInformativo } from "../../componentes/MensajeInformativo/MensajeInformativo";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
+import { FormatoFechaEs} from "../../utilidades/TratamientoFechas";
+import { useGeolocated } from "react-geolocated";
 
 export const UsuariosPagina = () => {
   const navigate = useNavigate();
@@ -34,6 +36,13 @@ export const UsuariosPagina = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [usuario, setUsuario] = useState();
 
+  const { coords, isGeolocationAvailable, isGeolocationEnabled } =
+        useGeolocated({
+            positionOptions: {
+                enableHighAccuracy: false,
+            },
+            userDecisionTimeout: 5000,
+        });
   const session = getSession();
 
   /* useQuery: Esta función toma tres argumentos:
@@ -128,6 +137,12 @@ export const UsuariosPagina = () => {
     { field: "login", headerName: "Login", flex: 0.4 },
     { field: "email", headerName: "email", flex: 0.3, hide: true  },
     { field: "usuarioGrupoId", headerName: "Grupo ID", flex: 0.3 },
+    { field: "fechaInterna", headerName: "Fecha de alta", flex: 0.4, 
+    valueFormatter: params =>
+    FormatoFechaEs(params.value),
+  },
+  { field: "latitud", headerName: "Latitud", flex: 0.4},
+  { field: "longitud", headerName: "Longitud", flex: 0.4},
     {
       field: "actions",
       type: "actions",

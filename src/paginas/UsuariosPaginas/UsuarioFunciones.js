@@ -7,7 +7,10 @@ export const initialValues = () => {
     nombre: "",
     login: "",
     password: "",
-    usuarioGrupoId: ""
+    usuarioGrupoId: "",
+    fechaInterna: "",
+    latitud: "",
+    longitud: "",
   };
 };
 /* This function defines the validation rules for the form fields using Yup.
